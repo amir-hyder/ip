@@ -86,6 +86,31 @@ public class Friday {
                 list.add(item);
                 int size = list.size();
                 printAddTask(item, size);
+            } else if (input.startsWith("delete")) {
+                try {
+                    String[] parts = input.split(" ");
+                    if (parts.length < 2) {
+                        throw new FridayException("Specify which task number you would like to delete");
+                    }
+                    if (parts.length > 2) {
+                        throw new FridayException("You have too many commands! Just include which task number you would like to delete");
+                    }
+                    int index;
+                    try {
+                        index = Integer.parseInt(parts[1]) - 1;
+                    } catch (NumberFormatException e) {
+                        throw new FridayException("Task number must be a valid integer");
+                    }
+                    Task task = list.get(index);
+                    list.remove(index);
+                    System.out.println(INDENTATION + "Noted. I've removed this task:");
+                    System.out.println(INDENTATION + INDENTATION + task.toString());
+                    System.out.println(INDENTATION + "Now you have " + list.size() + " tasks in the list.");
+                    System.out.println(INDENTATION + LINE);
+                } catch (FridayException e) {
+                    System.out.println(e.getMessage());
+                    System.out.println(INDENTATION + LINE);
+                }
             } else {
                 return;
             }
