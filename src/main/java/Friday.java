@@ -18,14 +18,48 @@ public class Friday {
                 break;
             } else if (input.equals("list")) {
                 printList(list);
-            } else if (input.contains("unmark")) {
-                int index = Integer.parseInt(input.split(" ")[1]);
-                Task task = list.get(index - 1);
-                unmark(task, index);
+            } else if (input.startsWith("unmark")) {
+                try {
+                    String[] parts = input.split(" ");
+                    if (parts.length < 2) {
+                        throw new FridayException("Please specify which task number you would like to unmark");
+                    }
+                    if (parts.length > 2) {
+                        throw new FridayException("You have too many commands! Just include which task number you would like us to unmark");
+                    }
+                    int index;
+                    try {
+                        index = Integer.parseInt(parts[1]);
+                    } catch (NumberFormatException e) {
+                        throw new FridayException("Task number must be a valid integer");
+                    }
+                    Task task = list.get(index - 1);
+                    unmark(task, index);
+                } catch (FridayException e) {
+                    System.out.println(e.getMessage());
+                    System.out.println(INDENTATION + LINE);
+                }
             } else if (input.contains("mark")) {
-                int index = Integer.parseInt(input.split(" ")[1]);
-                Task task = list.get(index - 1);
-                mark(task, index);
+                try {
+                    String[] parts = input.split(" ");
+                    if (parts.length < 2) {
+                        throw new FridayException("Please specify which task number you would like to mark");
+                    }
+                    if (parts.length > 2) {
+                        throw new FridayException("You have too many commands! Just include which task number you would like us to mark");
+                    }
+                    int index;
+                    try {
+                        index = Integer.parseInt(parts[1]);
+                    } catch (NumberFormatException e) {
+                        throw new FridayException("Task number must be a valid integer");
+                    }
+                    Task task = list.get(index - 1);
+                    mark(task, index);
+                } catch (FridayException e){
+                    System.out.println(e.getMessage());
+                    System.out.println(INDENTATION + LINE);
+                }
             } else if (input.contains("todo")) {
                 String todoItem = input.substring(5);
                 ToDo item = new ToDo(todoItem);

@@ -1,5 +1,5 @@
-public class FridayExeption extends Exception {
-    public FridayExeption(String msg) {
+public class FridayException extends Exception {
+    public FridayException(String msg) {
         super(msg);
     }
 }
