@@ -2,132 +2,161 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Friday {
-    private static final String LINE = "--------------------------------------------";
     private static final String INDENTATION = "  ";
+    private static final String PAGE_BREAK = "  --------------------------------------------";
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         ArrayList<Task> list = new ArrayList<>();
+        Storage storage = new Storage();
+
+        //load the list from memory
+        for (String line: storage.load()) {
+            try {
+                list.add(parseLineToTask(line));
+            } catch (FridayException e) {
+                System.out.println("Skipping bad line: " + e.getMessage());
+            }
+        }
 
        greet();
 
         while (true) {
             String input = sc.nextLine();
-            System.out.println(INDENTATION + LINE);
+            System.out.println(PAGE_BREAK);
             if (input.equals("bye")) {
                 break;
             } else if (input.equals("list")) {
                 printList(list);
-            } else if (input.startsWith("unmark")) {
+            } else {
                 try {
-                    String[] parts = input.split(" ");
-                    if (parts.length < 2) {
-                        throw new FridayException("Please specify which task number you would like to unmark");
-                    }
-                    if (parts.length > 2) {
-                        throw new FridayException("You have too many commands! Just include which task number you would like us to unmark");
-                    }
-                    int index;
-                    try {
-                        index = Integer.parseInt(parts[1]);
-                    } catch (NumberFormatException e) {
-                        throw new FridayException("Task number must be a valid integer");
-                    }
-                    Task task = list.get(index - 1);
-                    unmark(task, index);
-                } catch (FridayException e) {
-                    System.out.println(e.getMessage());
-                    System.out.println(INDENTATION + LINE);
-                }
-            } else if (input.contains("mark")) {
-                try {
-                    String[] parts = input.split(" ");
-                    if (parts.length < 2) {
-                        throw new FridayException("Please specify which task number you would like to mark");
-                    }
-                    if (parts.length > 2) {
-                        throw new FridayException("You have too many commands! Just include which task number you would like us to mark");
-                    }
-                    int index;
-                    try {
-                        index = Integer.parseInt(parts[1]);
-                    } catch (NumberFormatException e) {
-                        throw new FridayException("Task number must be a valid integer");
-                    }
-                    Task task = list.get(index - 1);
-                    mark(task, index);
+                    handleCommand(input, list, storage);
                 } catch (FridayException e){
                     System.out.println(e.getMessage());
-                    System.out.println(INDENTATION + LINE);
+                    System.out.println(PAGE_BREAK);
                 }
-            } else if (input.contains("todo")) {
-                String todoItem = input.substring(5);
-                ToDo item = new ToDo(todoItem);
-                list.add(item);
-                int size = list.size();
-                printAddTask(item, size);
-            } else if (input.contains("deadline")) {
-                String noCommand = input.substring(9);
-                String[] parts = noCommand.split(" /by ");
-                String description = parts[0];
-                String deadline = parts[1];
-                Deadline item = new Deadline(description, deadline);
-                list.add(item);
-                int size = list.size();
-                printAddTask(item, size);
-            } else if (input.contains("event")) {
-                String noCommand = input.substring(6);
-                String[] parts = noCommand.split(" /from ");
-                String description = parts[0];
-                String[] parts2 = parts[1].split(" /to ");
-                String start = parts2[0];
-                String end = parts2[1];
-                Event item = new Event(description, start, end);
-                list.add(item);
-                int size = list.size();
-                printAddTask(item, size);
-            } else if (input.startsWith("delete")) {
-                try {
-                    String[] parts = input.split(" ");
-                    if (parts.length < 2) {
-                        throw new FridayException("Specify which task number you would like to delete");
-                    }
-                    if (parts.length > 2) {
-                        throw new FridayException("You have too many commands! Just include which task number you would like to delete");
-                    }
-                    int index;
-                    try {
-                        index = Integer.parseInt(parts[1]) - 1;
-                    } catch (NumberFormatException e) {
-                        throw new FridayException("Task number must be a valid integer");
-                    }
-                    Task task = list.get(index);
-                    list.remove(index);
-                    System.out.println(INDENTATION + "Noted. I've removed this task:");
-                    System.out.println(INDENTATION + INDENTATION + task.toString());
-                    System.out.println(INDENTATION + "Now you have " + list.size() + " tasks in the list.");
-                    System.out.println(INDENTATION + LINE);
-                } catch (FridayException e) {
-                    System.out.println(e.getMessage());
-                    System.out.println(INDENTATION + LINE);
-                }
-            } else {
-                return;
             }
         }
         goodbye();
     }
 
+    public static void handleCommand(String input, ArrayList<Task> list, Storage storage) throws FridayException {
+        if (input.startsWith("mark")) {
+            handleMark(input, list, storage);
+        } else if (input.startsWith("unmark")) {
+            handleUnmark(input, list, storage);
+        } else if (input.startsWith("todo")) {
+            handleTodo(input, list, storage);
+        } else if (input.startsWith("deadline")) {
+            handleDeadline(input, list, storage);
+        } else if (input.startsWith("event")) {
+            handleEvent(input, list, storage);
+        } else if (input.startsWith("delete")) {
+            handleDelete(input, list, storage);
+        } else {
+            throw new FridayException("I don't understand that command");
+        }
+    }
+
+    public static void printDelete(Task task, ArrayList<Task> list) {
+        System.out.println(INDENTATION + "Noted. I've removed this task:");
+        System.out.println(INDENTATION + INDENTATION + task.toString());
+        System.out.println(INDENTATION + "Now you have " + list.size() + " tasks in the list.");
+        System.out.println(PAGE_BREAK);
+    }
+
+    public static void handleDelete(String input, ArrayList<Task> list, Storage storage) throws FridayException {
+        int index = parseIndex(input);
+        Task task = list.get(index - 1);
+        list.remove(index - 1);
+        saveTasks(list, storage);
+        printDelete(task, list);
+    }
+
+    public static void handleEvent(String input, ArrayList<Task> list, Storage storage) {
+        String noCommand = input.substring(6);
+        String[] parts = noCommand.split(" /from ");
+        String description = parts[0];
+        String[] parts2 = parts[1].split(" /to ");
+        String start = parts2[0];
+        String end = parts2[1];
+        Event item = new Event(description, start, end);
+        list.add(item);
+        int size = list.size();
+        printAddTask(item, size);
+        saveTasks(list, storage);
+    }
+
+    public static void handleDeadline(String input, ArrayList<Task> list, Storage storage) {
+        String noCommand = input.substring(9);
+        String[] parts = noCommand.split(" /by ");
+        String description = parts[0];
+        String deadline = parts[1];
+        Deadline item = new Deadline(description, deadline);
+        list.add(item);
+        int size = list.size();
+        printAddTask(item, size);
+        saveTasks(list, storage);
+    }
+
+    public static void handleTodo(String input, ArrayList<Task> list, Storage storage) {
+        String todoItem = input.substring(5);
+        ToDo item = new ToDo(todoItem);
+        list.add(item);
+        int size = list.size();
+        printAddTask(item, size);
+        saveTasks(list, storage);
+    }
+
+    public static void handleMark(String input, ArrayList<Task> list, Storage storage) throws FridayException {
+        int index = parseIndex(input);
+        Task task = list.get(index - 1);
+        mark(task, index);
+        saveTasks(list, storage);
+    }
+
+    public static void handleUnmark(String input, ArrayList<Task> list, Storage storage) throws FridayException {
+        int index = parseIndex(input);
+        Task task = list.get(index - 1);
+        unmark(task, index);
+        saveTasks(list, storage);
+    }
+
+    public static int parseIndex(String input) throws FridayException {
+        String[] parts = input.split(" ");
+        if (parts.length < 2) {
+            throw new FridayException("Please specify which task number");
+        }
+        if (parts.length > 2) {
+            throw new FridayException("You have too many commands! Just include which task number");
+        }
+        int index;
+        try {
+            index = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            throw new FridayException("Task number must be a valid integer");
+        }
+        return index;
+    }
+
+    public static void saveTasks(ArrayList<Task> list, Storage storage) {
+        ArrayList<String> lines = new ArrayList<>();
+        for (Task t : list) {
+            lines.add(t.toSaveString());
+        }
+        storage.save(lines);
+    }
+
     public static void greet() {
-        System.out.println(INDENTATION + LINE);
+        System.out.println(PAGE_BREAK);
         System.out.println(INDENTATION + "Hello! I'm Friday");
         System.out.println(INDENTATION + "What can I do for you?");
-        System.out.println(INDENTATION + LINE);
+        System.out.println(PAGE_BREAK);
     }
 
     public static void goodbye() {
         System.out.println(INDENTATION + "Bye. Hope to see you again soon!");
-        System.out.println(INDENTATION + LINE);
+        System.out.println(PAGE_BREAK);
     }
 
     public static void printList(ArrayList<Task> list) {
@@ -135,27 +164,74 @@ public class Friday {
         for (int i = 0; i < list.size(); i++) {
             System.out.println(INDENTATION + (i + 1) + ". " + list.get(i));
         }
-        System.out.println(INDENTATION + LINE);
+        System.out.println(PAGE_BREAK);
     }
 
     public static void unmark(Task task, int index) {
         task.unmark();
         System.out.println(INDENTATION + "OK, I've marked this task as not done yet:");
         System.out.println(INDENTATION + INDENTATION + task.toString());
-        System.out.println(INDENTATION + LINE);
+        System.out.println(PAGE_BREAK);
     }
 
     public static void mark(Task task, int index) {
         task.mark();
         System.out.println(INDENTATION + "Nice! I've marked this task as done:");
         System.out.println(INDENTATION + INDENTATION + task.toString());
-        System.out.println(INDENTATION + LINE);
+        System.out.println(PAGE_BREAK);
     }
 
     public static void printAddTask(Task task, int size) {
         System.out.println(INDENTATION + "Got it. I've added this task:");
         System.out.println(INDENTATION + INDENTATION + task.toString());
         System.out.println(INDENTATION + "Now you have " + size + " tasks in the list.");
-        System.out.println(INDENTATION + LINE);
+        System.out.println(PAGE_BREAK);
     }
+
+    public static Task parseLineToTask(String line) throws FridayException {
+        if (line == null || line.isBlank()) {
+            throw new FridayException("Empty line in save file");
+        }
+
+        String[] parts = line.split(" \\| ");
+
+        // Expected минимум: TYPE | DONE | DESCRIPTION
+        if (parts.length < 3) {
+            throw new FridayException("Corrupted save line: " + line);
+        }
+
+        String type = parts[0];
+        boolean isDone = parts[1].equals("1");
+        String description = parts[2];
+
+        Task task;
+        if (type.equals("T")) {
+            task = new ToDo(description);
+
+        } else if (type.equals("D")) {
+            if (parts.length < 4) {
+                throw new FridayException("Corrupted deadline line: " + line);
+            }
+            task = new Deadline(description, parts[3]);
+
+        } else if (type.equals("E")) {
+            if (parts.length < 4) {
+                throw new FridayException("Corrupted event line: " + line);
+            }
+            String[] timeParts = parts[3].split(" - ");
+            if (timeParts.length < 2) {
+                throw new FridayException("Corrupted event time: " + line);
+            }
+            task = new Event(description, timeParts[0], timeParts[1]);
+
+        } else {
+            throw new FridayException("Unknown task type: " + type);
+        }
+
+        if (isDone) {
+            task.mark();
+        }
+        return task;
+    }
+
 }

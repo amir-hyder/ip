@@ -1,5 +1,5 @@
 public class Task {
-    private String description;
+    private final String description;
     private boolean completed;
 
     public Task(String description) {
@@ -17,13 +17,11 @@ public class Task {
 
     @Override
     public String toString() {
-        String completionStatus;
-        if (!this.completed) {
-            completionStatus = "[ ]";
-        } else {
-            completionStatus = "[X]";
-        }
+        return (this.completed ? "[X] "
+                               : "[ ] ") + this.description;
+    }
 
-        return completionStatus + " " + this.description;
+    public String toSaveString() {
+        return (this.completed ? "1" : "0") + " | " + this.description;
     }
 }

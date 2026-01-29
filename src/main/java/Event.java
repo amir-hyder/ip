@@ -1,6 +1,6 @@
 public class Event extends Task {
-    private String start;
-    private String end;
+    private final String start;
+    private final String end;
 
     public Event(String description, String start, String end) {
         super(description);
@@ -11,5 +11,10 @@ public class Event extends Task {
     @Override
     public String toString() {
         return "[E] " + super.toString() + " (from: " + this.start + " to: " + this.end + ")";
+    }
+
+    @Override
+    public String toSaveString() {
+        return "E | " + super.toSaveString() + " | " + this.start + " - " + this.end;
     }
 }
