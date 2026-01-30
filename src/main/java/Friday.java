@@ -78,9 +78,11 @@ public class Friday {
         String[] parts = noCommand.split(" /from ");
         String description = parts[0];
         String[] parts2 = parts[1].split(" /to ");
-        String start = parts2[0];
+        String[] dateAndStart = parts2[0].split(" ");
+        String date = dateAndStart[0];
+        String start = dateAndStart[1];
         String end = parts2[1];
-        Event item = new Event(description, start, end);
+        Event item = new Event(description, date, start, end);
         list.add(item);
         int size = list.size();
         printAddTask(item, size);
@@ -215,14 +217,13 @@ public class Friday {
             task = new Deadline(description, parts[3]);
 
         } else if (type.equals("E")) {
-            if (parts.length < 4) {
+            if (parts.length < 6) {
                 throw new FridayException("Corrupted event line: " + line);
             }
-            String[] timeParts = parts[3].split(" - ");
-            if (timeParts.length < 2) {
-                throw new FridayException("Corrupted event time: " + line);
-            }
-            task = new Event(description, timeParts[0], timeParts[1]);
+            String date = parts[3];
+            String start = parts[4];
+            String end = parts[5];
+            task = new Event(description, date, start, end);
 
         } else {
             throw new FridayException("Unknown task type: " + type);
