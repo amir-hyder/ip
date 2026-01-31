@@ -2,22 +2,20 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Friday {
-    private static final String INDENTATION = "  ";
     private static final String PAGE_BREAK = "  --------------------------------------------";
 
     public static void main(String[] args) {
         UI ui = new UI();
-        TaskList list = new TaskList();
         Storage storage = new Storage();
         Parser parser = new Parser();
 
         //load the list from memory
-        for (String line: storage.load()) {
-            try {
-                list.addTask(parser.parseLineToTask(line));
-            } catch (FridayException e) {
-                System.out.println("Skipping bad line: " + e.getMessage());
-            }
+        TaskList list;
+        try {
+            list = storage.loadTaskList(parser);
+        } catch (FridayException e) {
+            ui.printException(e);
+            list = new TaskList();
         }
 
         ui.greet();
@@ -62,11 +60,11 @@ public class Friday {
         int index = parser.parseIndex(input);
         Task task = list.get(index - 1);
         list.deleteTask(index - 1);
-        saveTasks(list, storage);
+        storage.saveTaskList(list);
         ui.printDelete(task, list);
     }
 
-    public static void handleEvent(String input, TaskList list, Storage storage, UI ui) {
+    public static void handleEvent(String input, TaskList list, Storage storage, UI ui) throws FridayException {
         String noCommand = input.substring(6);
         String[] parts = noCommand.split(" /from ");
         String description = parts[0];
@@ -78,10 +76,10 @@ public class Friday {
         Event item = new Event(description, date, start, end);
         list.addTask(item);
         ui.printAddTask(item, list);
-        saveTasks(list, storage);
+        storage.saveTaskList(list);
     }
 
-    public static void handleDeadline(String input, TaskList list, Storage storage, UI ui) {
+    public static void handleDeadline(String input, TaskList list, Storage storage, UI ui) throws FridayException {
         String noCommand = input.substring(9);
         String[] parts = noCommand.split(" /by ");
         String description = parts[0];
@@ -89,15 +87,15 @@ public class Friday {
         Deadline item = new Deadline(description, deadline);
         list.addTask(item);
         ui.printAddTask(item, list);
-        saveTasks(list, storage);
+        storage.saveTaskList(list);
     }
 
-    public static void handleTodo(String input, TaskList list, Storage storage, UI ui) {
+    public static void handleTodo(String input, TaskList list, Storage storage, UI ui) throws FridayException {
         String todoItem = input.substring(5);
         ToDo item = new ToDo(todoItem);
         list.addTask(item);
         ui.printAddTask(item, list);
-        saveTasks(list, storage);
+        storage.saveTaskList(list);
     }
 
     public static void handleMark(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
@@ -105,7 +103,7 @@ public class Friday {
         Task task = list.get(index - 1);
         task.mark();
         ui.printMarkTask(task);
-        saveTasks(list, storage);
+        storage.saveTaskList(list);
     }
 
     public static void handleUnmark(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
@@ -113,15 +111,6 @@ public class Friday {
         Task task = list.get(index - 1);
         task.unmark();
         ui.printUnmarkTask(task);
-        saveTasks(list, storage);
-    }
-
-    public static void saveTasks(TaskList list, Storage storage) {
-        ArrayList<String> lines = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            Task task = list.get(i);
-            lines.add(task.toSaveString());
-        }
-        storage.save(lines);
+        storage.saveTaskList(list);
     }
 }
