@@ -7,13 +7,13 @@ public class Friday {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        ArrayList<Task> list = new ArrayList<>();
+        TaskList list = new TaskList();
         Storage storage = new Storage();
 
         //load the list from memory
         for (String line: storage.load()) {
             try {
-                list.add(parseLineToTask(line));
+                list.addTask(parseLineToTask(line));
             } catch (FridayException e) {
                 System.out.println("Skipping bad line: " + e.getMessage());
             }
@@ -40,7 +40,7 @@ public class Friday {
         goodbye();
     }
 
-    public static void handleCommand(String input, ArrayList<Task> list, Storage storage) throws FridayException {
+    public static void handleCommand(String input, TaskList list, Storage storage) throws FridayException {
         if (input.startsWith("mark")) {
             handleMark(input, list, storage);
         } else if (input.startsWith("unmark")) {
@@ -58,22 +58,22 @@ public class Friday {
         }
     }
 
-    public static void printDelete(Task task, ArrayList<Task> list) {
+    public static void printDelete(Task task, TaskList list) {
         System.out.println(INDENTATION + "Noted. I've removed this task:");
         System.out.println(INDENTATION + INDENTATION + task.toString());
         System.out.println(INDENTATION + "Now you have " + list.size() + " tasks in the list.");
         System.out.println(PAGE_BREAK);
     }
 
-    public static void handleDelete(String input, ArrayList<Task> list, Storage storage) throws FridayException {
+    public static void handleDelete(String input, TaskList list, Storage storage) throws FridayException {
         int index = parseIndex(input);
         Task task = list.get(index - 1);
-        list.remove(index - 1);
+        list.deleteTask(index - 1);
         saveTasks(list, storage);
         printDelete(task, list);
     }
 
-    public static void handleEvent(String input, ArrayList<Task> list, Storage storage) {
+    public static void handleEvent(String input, TaskList list, Storage storage) {
         String noCommand = input.substring(6);
         String[] parts = noCommand.split(" /from ");
         String description = parts[0];
@@ -83,41 +83,41 @@ public class Friday {
         String start = dateAndStart[1];
         String end = parts2[1];
         Event item = new Event(description, date, start, end);
-        list.add(item);
+        list.addTask(item);
         int size = list.size();
         printAddTask(item, size);
         saveTasks(list, storage);
     }
 
-    public static void handleDeadline(String input, ArrayList<Task> list, Storage storage) {
+    public static void handleDeadline(String input, TaskList list, Storage storage) {
         String noCommand = input.substring(9);
         String[] parts = noCommand.split(" /by ");
         String description = parts[0];
         String deadline = parts[1];
         Deadline item = new Deadline(description, deadline);
-        list.add(item);
+        list.addTask(item);
         int size = list.size();
         printAddTask(item, size);
         saveTasks(list, storage);
     }
 
-    public static void handleTodo(String input, ArrayList<Task> list, Storage storage) {
+    public static void handleTodo(String input, TaskList list, Storage storage) {
         String todoItem = input.substring(5);
         ToDo item = new ToDo(todoItem);
-        list.add(item);
+        list.addTask(item);
         int size = list.size();
         printAddTask(item, size);
         saveTasks(list, storage);
     }
 
-    public static void handleMark(String input, ArrayList<Task> list, Storage storage) throws FridayException {
+    public static void handleMark(String input, TaskList list, Storage storage) throws FridayException {
         int index = parseIndex(input);
         Task task = list.get(index - 1);
         mark(task, index);
         saveTasks(list, storage);
     }
 
-    public static void handleUnmark(String input, ArrayList<Task> list, Storage storage) throws FridayException {
+    public static void handleUnmark(String input, TaskList list, Storage storage) throws FridayException {
         int index = parseIndex(input);
         Task task = list.get(index - 1);
         unmark(task, index);
@@ -141,10 +141,11 @@ public class Friday {
         return index;
     }
 
-    public static void saveTasks(ArrayList<Task> list, Storage storage) {
+    public static void saveTasks(TaskList list, Storage storage) {
         ArrayList<String> lines = new ArrayList<>();
-        for (Task t : list) {
-            lines.add(t.toSaveString());
+        for (int i = 0; i < list.size(); i++) {
+            Task task = list.get(i);
+            lines.add(task.toSaveString());
         }
         storage.save(lines);
     }
@@ -161,7 +162,7 @@ public class Friday {
         System.out.println(PAGE_BREAK);
     }
 
-    public static void printList(ArrayList<Task> list) {
+    public static void printList(TaskList list) {
         System.out.println(INDENTATION + "Here are the tasks in your list:");
         for (int i = 0; i < list.size(); i++) {
             System.out.println(INDENTATION + (i + 1) + ". " + list.get(i));
