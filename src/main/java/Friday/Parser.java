@@ -1,6 +1,8 @@
+package Friday;
+
 public class Parser {
 
-    // Get index of Task user would like to mark/unmark/delete
+    // Get index of Friday.Task user would like to mark/unmark/delete
     public int parseIndex(String input) throws FridayException {
         String[] parts = input.split(" ");
         if (parts.length < 2) {
@@ -13,7 +15,7 @@ public class Parser {
         try {
             index = Integer.parseInt(parts[1]);
         } catch (NumberFormatException e) {
-            throw new FridayException("Task number must be a valid integer");
+            throw new FridayException("Friday.Task number must be a valid integer");
         }
         return index;
     }

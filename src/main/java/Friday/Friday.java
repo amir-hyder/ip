@@ -1,5 +1,4 @@
-import java.util.Scanner;
-import java.util.ArrayList;
+package Friday;
 
 public class Friday {
     private static final String PAGE_BREAK = "  --------------------------------------------";

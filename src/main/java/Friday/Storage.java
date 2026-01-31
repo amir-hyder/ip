@@ -1,3 +1,5 @@
+package Friday;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -37,7 +39,7 @@ public class Storage {
         }
     }
 
-    // Loads all tasks from storage into a TaskList by using Parser to interpret each line.
+    // Loads all tasks from storage into a Friday.TaskList by using Friday.Parser to interpret each line.
     public TaskList loadTaskList(Parser parser) throws FridayException {
         TaskList list = new TaskList();
         for (String line : load()) {
@@ -48,7 +50,7 @@ public class Storage {
         return list;
     }
 
-    // Saves the current TaskList into storage by converting each Task to its save string.
+    // Saves the current Friday.TaskList into storage by converting each Friday.Task to its save string.
     public void saveTaskList(TaskList list) throws FridayException {
         List<String> lines = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {

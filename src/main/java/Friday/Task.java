@@ -1,3 +1,5 @@
+package Friday;
+
 public class Task {
     private final String description;
     private boolean completed;
