@@ -18,7 +18,7 @@ public class UI {
 
     public void greet() {
         System.out.println(PAGE_BREAK);
-        System.out.println(INDENTATION + "Hello! I'm Friday.Friday");
+        System.out.println(INDENTATION + "Hello! I'm Friday.");
         System.out.println(INDENTATION + "What can I do for you?");
         System.out.println(PAGE_BREAK);
     }
