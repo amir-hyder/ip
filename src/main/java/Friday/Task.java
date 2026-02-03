@@ -20,7 +20,7 @@ public class Task {
     @Override
     public String toString() {
         return (this.completed ? "[X] "
-                               : "[ ] ") + this.description;
+                : "[ ] ") + this.description;
     }
 
     public String toSaveString() {

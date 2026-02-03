@@ -1,11 +1,11 @@
 package Friday;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.io.IOException;
+import java.util.List;
 
 public class Storage {
     private final Path filePath;
@@ -28,7 +28,7 @@ public class Storage {
     }
 
     // Save raw lines to the file
-    public void save(List<String> lines) throws FridayException{
+    public void save(List<String> lines) throws FridayException {
         try {
             // Create ./data folder if missing
             Files.createDirectories(filePath.getParent());
