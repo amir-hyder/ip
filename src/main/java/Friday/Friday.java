@@ -74,9 +74,29 @@ public class Friday {
             handleEvent(input, list, storage, ui);
         } else if (input.startsWith("delete")) {
             handleDelete(input, list, storage, ui, parser);
+        } else if (input.startsWith("find")) {
+            handleFind(input, list, ui);
         } else {
             throw new FridayException("I don't understand that command");
         }
+    }
+
+    /**
+     * Handles the {@code find} command.
+     * Searches for tasks whose descriptions contain the given keyword
+     * and displays the matching tasks without modifying the task list.
+     *
+     * @param input The full user input string.
+     * @param list The current {@link TaskList}.
+     * @param ui The {@link UI} responsible for displaying output.
+     * @throws FridayException If the keyword is missing.
+     */
+    public static void handleFind(String input, TaskList list, UI ui) throws FridayException {
+        String keyword = input.substring(5).trim();
+        if (keyword.isEmpty()) {
+            throw new FridayException("Please provide a keyword to search for.");
+        }
+        ui.printFindResults(list, keyword);
     }
 
     /**
@@ -96,6 +116,7 @@ public class Friday {
         storage.saveTaskList(list);
         ui.printDelete(task, list);
     }
+
     /**
      * Handles creation of an event task from the user command.
      *

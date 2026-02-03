@@ -1,6 +1,7 @@
 package Friday;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
 /**
  * Represents the user interface of the chatbot.
@@ -111,6 +112,27 @@ public class UI {
      */
     public void printException(Exception e) {
         System.out.println(e.getMessage());
+        System.out.println(PAGE_BREAK);
+    }
+
+    // existing fields + methods unchanged
+
+    /**
+     * Prints all tasks whose descriptions match the given keyword.
+     *
+     * @param list The {@link TaskList} to search from.
+     * @param keyword The keyword to search for.
+     */
+    public void printFindResults(TaskList list, String keyword) {
+        System.out.println(PAGE_BREAK);
+        System.out.println(INDENTATION + "Here are the matching tasks in your list:");
+
+        ArrayList<Task> matches = list.findTasks(keyword);
+
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println(INDENTATION + (i + 1) + "." + matches.get(i));
+        }
+
         System.out.println(PAGE_BREAK);
     }
 }
