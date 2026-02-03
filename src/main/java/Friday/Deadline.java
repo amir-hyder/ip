@@ -8,8 +8,9 @@ import java.time.format.DateTimeParseException;
  * Represents a deadline task that must be completed by a specific date.
  */
 public class Deadline extends Task {
-    private final static DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private final static DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy");
+
     private final LocalDate deadline;
 
     public Deadline(String description, String deadline) {

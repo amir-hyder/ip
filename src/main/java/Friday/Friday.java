@@ -43,7 +43,7 @@ public class Friday {
             } else {
                 try {
                     handleCommand(input, list, storage, ui, parser);
-                } catch (FridayException e){
+                } catch (FridayException e) {
                     ui.printException(e);
                 }
             }
