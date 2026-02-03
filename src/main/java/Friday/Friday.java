@@ -1,8 +1,22 @@
 package Friday;
 
+/**
+ * The main entry point of the Friday task management application.
+ * <p>
+ * This class coordinates user interaction, command handling, task management,
+ * and persistent storage by delegating responsibilities to {@link UI},
+ * {@link Parser}, {@link TaskList}, and {@link Storage}.
+ */
 public class Friday {
     private static final String PAGE_BREAK = "  --------------------------------------------";
 
+    /**
+     * Starts the Friday application.
+     * Initializes required components, loads saved tasks, and processes user commands
+     * until the user exits the application.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         UI ui = new UI();
         Storage storage = new Storage();
@@ -37,6 +51,16 @@ public class Friday {
         ui.bye();
     }
 
+    /**
+     * Dispatches the given user command to the appropriate handler method.
+     *
+     * @param input   The full user command.
+     * @param list    The {@link TaskList} containing current tasks.
+     * @param storage The {@link Storage} used for saving tasks.
+     * @param ui      The {@link UI} used to display messages.
+     * @param parser  The {@link Parser} used to parse command details.
+     * @throws FridayException If the command is invalid or cannot be processed.
+     */
     public static void handleCommand(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
         if (input.startsWith("mark")) {
             handleMark(input, list, storage, ui, parser);
@@ -55,6 +79,16 @@ public class Friday {
         }
     }
 
+    /**
+     * Handles deletion of a task specified by the user command.
+     *
+     * @param input   The delete command entered by the user.
+     * @param list    The {@link TaskList} containing current tasks.
+     * @param storage The {@link Storage} used to save changes.
+     * @param ui      The {@link UI} used to display output.
+     * @param parser  The {@link Parser} used to parse the task index.
+     * @throws FridayException If the command format or index is invalid.
+     */
     public static void handleDelete(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
         int index = parser.parseIndex(input);
         Task task = list.get(index - 1);
@@ -62,7 +96,15 @@ public class Friday {
         storage.saveTaskList(list);
         ui.printDelete(task, list);
     }
-
+    /**
+     * Handles creation of an event task from the user command.
+     *
+     * @param input   The event command entered by the user.
+     * @param list    The {@link TaskList} to add the event to.
+     * @param storage The {@link Storage} used to save changes.
+     * @param ui      The {@link UI} used to display output.
+     * @throws FridayException If the command format is invalid.
+     */
     public static void handleEvent(String input, TaskList list, Storage storage, UI ui) throws FridayException {
         String noCommand = input.substring(6);
         String[] parts = noCommand.split(" /from ");
@@ -78,6 +120,15 @@ public class Friday {
         storage.saveTaskList(list);
     }
 
+    /**
+     * Handles creation of a deadline task from the user command.
+     *
+     * @param input   The deadline command entered by the user.
+     * @param list    The {@link TaskList} to add the deadline to.
+     * @param storage The {@link Storage} used to save changes.
+     * @param ui      The {@link UI} used to display output.
+     * @throws FridayException If the command format is invalid.
+     */
     public static void handleDeadline(String input, TaskList list, Storage storage, UI ui) throws FridayException {
         String noCommand = input.substring(9);
         String[] parts = noCommand.split(" /by ");
@@ -89,6 +140,15 @@ public class Friday {
         storage.saveTaskList(list);
     }
 
+    /**
+     * Handles creation of a to-do task from the user command.
+     *
+     * @param input   The to-do command entered by the user.
+     * @param list    The {@link TaskList} to add the task to.
+     * @param storage The {@link Storage} used to save changes.
+     * @param ui      The {@link UI} used to display output.
+     * @throws FridayException If the command format is invalid.
+     */
     public static void handleTodo(String input, TaskList list, Storage storage, UI ui) throws FridayException {
         String todoItem = input.substring(5);
         ToDo item = new ToDo(todoItem);
@@ -97,6 +157,16 @@ public class Friday {
         storage.saveTaskList(list);
     }
 
+    /**
+     * Handles marking a task as completed.
+     *
+     * @param input   The mark command entered by the user.
+     * @param list    The {@link TaskList} containing current tasks.
+     * @param storage The {@link Storage} used to save changes.
+     * @param ui      The {@link UI} used to display output.
+     * @param parser  The {@link Parser} used to parse the task index.
+     * @throws FridayException If the command format or index is invalid.
+     */
     public static void handleMark(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
         int index = parser.parseIndex(input);
         Task task = list.get(index - 1);
@@ -105,6 +175,16 @@ public class Friday {
         storage.saveTaskList(list);
     }
 
+    /**
+     * Handles unmarking a completed task.
+     *
+     * @param input   The unmark command entered by the user.
+     * @param list    The {@link TaskList} containing current tasks.
+     * @param storage The {@link Storage} used to save changes.
+     * @param ui      The {@link UI} used to display output.
+     * @param parser  The {@link Parser} used to parse the task index.
+     * @throws FridayException If the command format or index is invalid.
+     */
     public static void handleUnmark(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
         int index = parser.parseIndex(input);
         Task task = list.get(index - 1);

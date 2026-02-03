@@ -1,9 +1,20 @@
 package Friday;
 
+/**
+ * Parses user commands and saved task data into usable program objects.
+ * Responsible for interpreting task indices from commands and reconstructing
+ * {@link Task} objects from stored text.
+ */
 public class Parser {
 
-    // Get index of Friday.Task user would like to mark/unmark/delete
-    public int parseIndex(String input) throws FridayException {
+    /**
+     * Parses the task index from a user command such as {@code "mark 2"}.
+     * The index is expected to be 1-based.
+     *
+     * @param input The full user command.
+     * @return The parsed task index.
+     * @throws FridayException If the command does not contain exactly one valid integer index.
+     */    public int parseIndex(String input) throws FridayException {
         String[] parts = input.split(" ");
         if (parts.length < 2) {
             throw new FridayException("Please specify which task number");
@@ -20,6 +31,19 @@ public class Parser {
         return index;
     }
 
+    /**
+     * Parses a saved task line into a {@link Task}.
+     * <p>
+     * Expected format:
+     * <pre>
+     * TYPE | DONE | DESCRIPTION [| EXTRA_FIELDS]
+     * </pre>
+     * where TYPE can be {@code T}, {@code D}, or {@code E}.
+     *
+     * @param line A single line read from the save file.
+     * @return The reconstructed {@code Task}.
+     * @throws FridayException If the line is empty, corrupted, or contains an unknown task type.
+     */
     public Task parseLineToTask(String line) throws FridayException {
         if (line == null || line.isBlank()) {
             throw new FridayException("Empty line in save file");
