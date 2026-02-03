@@ -34,4 +34,22 @@ public class TaskList {
     public Task get(int index) {
         return this.list.get(index);
     }
+
+    /**
+     * Finds all tasks whose string representation contains
+     * the given keyword.
+     *
+     * @param keyword The keyword to search for.
+     * @return A list of matching {@link Task} objects.
+     */
+    public ArrayList<Task> findTasks(String keyword) {
+        ArrayList<Task> results = new ArrayList<>();
+
+        for (Task task : list) {
+            if (task.toString().contains(keyword)) {
+                results.add(task);
+            }
+        }
+        return results;
+    }
 }
