@@ -1,4 +1,4 @@
-package Friday;
+package friday;
 
 /**
  * Represents a generic task with a description and completion status.
@@ -6,36 +6,42 @@ package Friday;
  */
 public class Task {
     private final String description;
-    private boolean completed;
+    private boolean isCompleted;
 
+    /**
+     * Constructs an {@code Task} with a description and isCompleted field.
+     *
+     * @param description Description of the event
+     *                    isCompleted is initially set to false
+     */
     public Task(String description) {
         this.description = description;
-        this.completed = false;
+        this.isCompleted = false;
     }
 
     /**
-     * Marks this task as completed.
+     * Marks this task as isCompleted.
      */
     public void mark() {
-        this.completed = true;
+        this.isCompleted = true;
     }
 
     /**
-     * Marks this task as not completed.
+     * Marks this task as not isCompleted.
      */
     public void unmark() {
-        this.completed = false;
+        this.isCompleted = false;
     }
 
     /**
      * Returns the string representation of this task for display to the user.
-     * Indicates whether the task is completed and shows its description.
+     * Indicates whether the task is isCompleted and shows its description.
      *
      * @return A formatted string representing the task.
      */
     @Override
     public String toString() {
-        return (this.completed ? "[X] "
+        return (this.isCompleted ? "[X] "
                 : "[ ] ") + this.description;
     }
 
@@ -46,6 +52,6 @@ public class Task {
      * @return A formatted save string representing the task.
      */
     public String toSaveString() {
-        return (this.completed ? "1" : "0") + " | " + this.description;
+        return (this.isCompleted ? "1" : "0") + " | " + this.description;
     }
 }

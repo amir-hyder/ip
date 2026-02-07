@@ -1,4 +1,4 @@
-package Friday;
+package friday;
 
 /**
  * Parses user commands and saved task data into usable program objects.
@@ -14,7 +14,8 @@ public class Parser {
      * @param input The full user command.
      * @return The parsed task index.
      * @throws FridayException If the command does not contain exactly one valid integer index.
-     */    public int parseIndex(String input) throws FridayException {
+     */
+    public int parseIndex(String input) throws FridayException {
         String[] parts = input.split(" ");
         if (parts.length < 2) {
             throw new FridayException("Please specify which task number");

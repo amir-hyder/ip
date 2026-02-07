@@ -1,4 +1,4 @@
-package Friday;
+package friday;
 
 /**
  * Represents a custom exception used by the Friday application

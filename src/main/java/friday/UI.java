@@ -1,7 +1,7 @@
-package Friday;
+package friday;
 
-import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Represents the user interface of the chatbot.

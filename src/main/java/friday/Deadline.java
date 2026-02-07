@@ -1,4 +1,4 @@
-package Friday;
+package friday;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +13,12 @@ public class Deadline extends Task {
 
     private final LocalDate deadline;
 
+    /**
+     *  Constructs an {@code Deadline} with a description, and deadline.
+     *
+     * @param description Description of the deadline
+     * @param deadline Date the deadline is due
+     */
     public Deadline(String description, String deadline) {
         super(description);
         try {

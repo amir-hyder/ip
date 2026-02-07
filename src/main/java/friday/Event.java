@@ -1,4 +1,4 @@
-package Friday;
+package friday;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -19,6 +19,14 @@ public class Event extends Task {
     private final LocalTime start;
     private final LocalTime end;
 
+    /**
+     * Constructs an {@code Event} with a description, start time, and end time.
+     *
+     * @param description Description of the event.
+     * @param date Date of the event
+     * @param start Start time of the event.
+     * @param end End time of the event.
+     */
     public Event(String description, String date, String start, String end) {
         super(description);
         try {
