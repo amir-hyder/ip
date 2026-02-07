@@ -1,4 +1,4 @@
-package Friday;
+package friday;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +14,10 @@ import java.util.List;
 public class Storage {
     private final Path filePath;
 
+    /**
+     * Constructs a {@code Storage} object and initialises the file path
+     * used to store task data.
+     */
     public Storage() {
         // This represents ./data/duke.txt
         this.filePath = Paths.get("data", "duke.txt");
@@ -42,7 +46,7 @@ public class Storage {
      * @param lines The list of strings to be written to the save file.
      * @throws FridayException If an I/O error occurs while writing to the file.
      */
-    public void save(List<String> lines) throws FridayException{
+    public void save(List<String> lines) throws FridayException {
         try {
             // Create ./data folder if missing
             Files.createDirectories(filePath.getParent());
@@ -60,7 +64,8 @@ public class Storage {
      * @param parser The {@code Parser} used to interpret saved task lines.
      * @return A {@code TaskList} containing all loaded tasks.
      * @throws FridayException If the save file is corrupted or cannot be read.
-     */    public TaskList loadTaskList(Parser parser) throws FridayException {
+     */
+    public TaskList loadTaskList(Parser parser) throws FridayException {
         TaskList list = new TaskList();
         for (String line : load()) {
             // If the save file is corrupted, we fail fast (cleanest behavior for now).
@@ -76,7 +81,8 @@ public class Storage {
      *
      * @param list The {@code TaskList} to be saved.
      * @throws FridayException If an I/O error occurs while saving tasks.
-     */    public void saveTaskList(TaskList list) throws FridayException {
+     */
+    public void saveTaskList(TaskList list) throws FridayException {
         List<String> lines = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             lines.add(list.get(i).toSaveString());

@@ -1,4 +1,4 @@
-package Friday;
+package friday;
 
 /**
  * The main entry point of the Friday task management application.
@@ -61,7 +61,8 @@ public class Friday {
      * @param parser  The {@link Parser} used to parse command details.
      * @throws FridayException If the command is invalid or cannot be processed.
      */
-    public static void handleCommand(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
+    public static void handleCommand(String input, TaskList list, Storage storage,
+                                     UI ui, Parser parser) throws FridayException {
         if (input.startsWith("mark")) {
             handleMark(input, list, storage, ui, parser);
         } else if (input.startsWith("unmark")) {
@@ -109,7 +110,8 @@ public class Friday {
      * @param parser  The {@link Parser} used to parse the task index.
      * @throws FridayException If the command format or index is invalid.
      */
-    public static void handleDelete(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
+    public static void handleDelete(String input, TaskList list, Storage storage,
+                                    UI ui, Parser parser) throws FridayException {
         int index = parser.parseIndex(input);
         Task task = list.get(index - 1);
         list.deleteTask(index - 1);
@@ -188,7 +190,8 @@ public class Friday {
      * @param parser  The {@link Parser} used to parse the task index.
      * @throws FridayException If the command format or index is invalid.
      */
-    public static void handleMark(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
+    public static void handleMark(String input, TaskList list, Storage storage,
+                                  UI ui, Parser parser) throws FridayException {
         int index = parser.parseIndex(input);
         Task task = list.get(index - 1);
         task.mark();
@@ -206,7 +209,8 @@ public class Friday {
      * @param parser  The {@link Parser} used to parse the task index.
      * @throws FridayException If the command format or index is invalid.
      */
-    public static void handleUnmark(String input, TaskList list, Storage storage, UI ui, Parser parser) throws FridayException {
+    public static void handleUnmark(String input, TaskList list, Storage storage,
+                                    UI ui, Parser parser) throws FridayException {
         int index = parser.parseIndex(input);
         Task task = list.get(index - 1);
         task.unmark();

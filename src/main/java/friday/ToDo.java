@@ -1,4 +1,4 @@
-package Friday;
+package friday;
 
 /**
  * Represents a to-do task that has a description but no date or time constraints.
