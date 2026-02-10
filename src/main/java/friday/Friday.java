@@ -1,14 +1,78 @@
 package friday;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 /**
- * The main entry point of the Friday task management application.
+ * The main.css entry point of the Friday task management application.
  * <p>
  * This class coordinates user interaction, command handling, task management,
  * and persistent storage by delegating responsibilities to {@link UI},
  * {@link Parser}, {@link TaskList}, and {@link Storage}.
  */
 public class Friday {
-    private static final String PAGE_BREAK = "  --------------------------------------------";
+    // Shared components
+    private final UI ui;
+    private final Storage storage;
+    private final Parser parser;
+    private TaskList list;
+
+    private boolean isExit = false;
+
+    /**
+     * Constructs a new Friday instance and initializes
+     * the internal application state.
+     */
+    public Friday() {
+        ui = new UI();
+        storage = new Storage();
+        parser = new Parser();
+
+        try {
+            list = storage.loadTaskList(parser);
+        } catch (FridayException e) {
+            // For GUI, we don't want to crash; start fresh.
+            list = new TaskList();
+        }
+    }
+
+    public boolean isExit() {
+        return this.isExit;
+    }
+
+    /** Optional: show greeting in GUI at startup. */
+    public String getWelcomeMessage() {
+        return captureOutput(() -> ui.greet()).trim();
+    }
+
+    /** GUI calls this for every user input. */
+    public String getResponse(String input) {
+        String trimmed = (input == null) ? "" : input.trim();
+        if (trimmed.isEmpty()) {
+            return "";
+        }
+
+        return captureOutput(() -> {
+            if (trimmed.equals("bye")) {
+                isExit = true;
+                ui.bye();
+                return;
+            }
+
+            if (trimmed.equals("list")) {
+                ui.printList(list);
+                return;
+            }
+
+            try {
+                handleCommand(trimmed, list, storage, ui, parser);
+            } catch (FridayException e) {
+                ui.printException(e);
+            } catch (RuntimeException e) {
+                ui.printException(new FridayException("Something went wrong: " + e.getMessage()));
+            }
+        }).trim();
+    }
 
     /**
      * Starts the Friday application.
@@ -18,37 +82,42 @@ public class Friday {
      * @param args Command-line arguments (not used).
      */
     public static void main(String[] args) {
-        UI ui = new UI();
-        Storage storage = new Storage();
-        Parser parser = new Parser();
+        Friday friday = new Friday();
 
-        //load the list from memory
-        TaskList list;
-        try {
-            list = storage.loadTaskList(parser);
-        } catch (FridayException e) {
-            ui.printException(e);
-            list = new TaskList();
-        }
-
-        ui.greet();
+        //greet
+        friday.ui.greet();
 
         while (true) {
-            String input = ui.readCommand();
-            System.out.println(PAGE_BREAK);
+            String input = friday.ui.readCommand();
             if (input.equals("bye")) {
                 break;
             } else if (input.equals("list")) {
-                ui.printList(list);
+                friday.ui.printList(friday.list);
             } else {
                 try {
-                    handleCommand(input, list, storage, ui, parser);
+                    handleCommand(input, friday.list, friday.storage, friday.ui, friday.parser);
                 } catch (FridayException e) {
-                    ui.printException(e);
+                    friday.ui.printException(e);
                 }
             }
         }
-        ui.bye();
+        friday.ui.bye();
+    }
+
+    /** Captures anything printed to System.out during action.run() and returns it. */
+    private String captureOutput(Runnable action) {
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream tempOut = new PrintStream(baos);
+
+        try {
+            System.setOut(tempOut);
+            action.run();
+        } finally {
+            System.out.flush();
+            System.setOut(originalOut);
+        }
+        return baos.toString();
     }
 
     /**
@@ -113,6 +182,9 @@ public class Friday {
     public static void handleDelete(String input, TaskList list, Storage storage,
                                     UI ui, Parser parser) throws FridayException {
         int index = parser.parseIndex(input);
+        if (index < 1 || index > list.size()) {
+            throw new FridayException("Task number is out of range");
+        }
         Task task = list.get(index - 1);
         list.deleteTask(index - 1);
         storage.saveTaskList(list);

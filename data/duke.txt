@@ -1,2 +1,2 @@
-T | 0 | borrow book
-D | 0 | return book | 2026-06-06
+T | 0 | read book
+T | 0 | level 10
