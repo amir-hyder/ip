@@ -16,6 +16,7 @@ public class Parser {
      * @throws FridayException If the command does not contain exactly one valid integer index.
      */
     public int parseIndex(String input) throws FridayException {
+        assert input != null : "parseIndex should not receive null input";
         String[] parts = input.split(" ");
         if (parts.length < 2) {
             throw new FridayException("Please specify which task number");
@@ -26,6 +27,7 @@ public class Parser {
         int index;
         try {
             index = Integer.parseInt(parts[1]);
+            assert index > 0 : "Index should be positive (1-based)";
         } catch (NumberFormatException e) {
             throw new FridayException("Friday.Task number must be a valid integer");
         }
@@ -46,32 +48,31 @@ public class Parser {
      * @throws FridayException If the line is empty, corrupted, or contains an unknown task type.
      */
     public Task parseLineToTask(String line) throws FridayException {
-        if (line == null || line.isBlank()) {
+        assert line != null : "parseLineToTask should not receive null";
+        if (line.isBlank()) {
             throw new FridayException("Empty line in save file");
         }
 
         String[] parts = line.split(" \\| ");
-
+        assert parts.length >= 3 : "Split result should have at least 3 parts";
         // Expected минимум: TYPE | DONE | DESCRIPTION
-        if (parts.length < 3) {
-            throw new FridayException("Corrupted save line: " + line);
-        }
 
         String type = parts[0];
+        assert type.equals("T") || type.equals("D") || type.equals("E")
+                : "Invalid task type";
         boolean isDone = parts[1].equals("1");
         String description = parts[2];
+        assert !description.isBlank() : "Task description should not be blank";
 
         Task task;
         if (type.equals("T")) {
             task = new ToDo(description);
-
         } else if (type.equals("D")) {
             if (parts.length < 4) {
                 throw new FridayException("Corrupted deadline line: " + line);
             }
             task = new Deadline(description, parts[3]);
-
-        } else if (type.equals("E")) {
+        } else {
             if (parts.length < 6) {
                 throw new FridayException("Corrupted event line: " + line);
             }
@@ -79,9 +80,6 @@ public class Parser {
             String start = parts[4];
             String end = parts[5];
             task = new Event(description, date, start, end);
-
-        } else {
-            throw new FridayException("Unknown task type: " + type);
         }
 
         if (isDone) {
