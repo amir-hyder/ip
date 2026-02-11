@@ -28,9 +28,9 @@ public class Event extends Task {
      * Constructs an {@code Event} with a description, start time, and end time.
      *
      * @param description Description of the event.
-     * @param date Date of the event
-     * @param start Start time of the event.
-     * @param end End time of the event.
+     * @param dateRaw Date of the event
+     * @param startRaw Start time of the event.
+     * @param endRaw End time of the event.
      */
     public Event(String description, String dateRaw, String startRaw, String endRaw) {
         super(description);
@@ -84,5 +84,9 @@ public class Event extends Task {
                 + STORAGE_DELIMITER + this.date.format(DATE_INPUT)
                 + STORAGE_DELIMITER + this.start.format(TIME_INPUT)
                 + STORAGE_DELIMITER + this.end.format(TIME_INPUT);
+    }
+
+    public LocalDate getDate() {
+        return this.date;
     }
 }

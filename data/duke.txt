@@ -1,2 +1,4 @@
 T | 0 | read book
 T | 0 | level 10
+D | 0 | CS2103 assignment | 2026-02-15
+E | 0 | meeting | 2026-02-13 | 1400 | 1600

@@ -2,6 +2,7 @@ package friday;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.LocalDate;
 
 /**
  * The main entry point of the Friday task management application.
@@ -146,6 +147,8 @@ public class Friday {
             handleDelete(input, list, storage, ui, parser);
         } else if (input.startsWith("find")) {
             handleFind(input, list, ui);
+        } else if (input.startsWith("remind")) {
+            handleRemind(input, list, ui);
         } else {
             throw new FridayException("I don't understand that command");
         }
@@ -288,5 +291,36 @@ public class Friday {
         task.unmark();
         ui.printUnmarkTask(task);
         storage.saveTaskList(list);
+    }
+
+    /**
+     * Handles the {@code remind} command.
+     * <p>
+     * Displays tasks occurring within the specified number of days
+     * starting from the current date. If no number is provided,
+     * a default reminder window of 7 days is used.
+     *
+     * @param input The full user input string.
+     * @param list  The {@link TaskList} containing current tasks.
+     * @param ui    The {@link UI} used to display output.
+     * @throws FridayException If the input format is invalid.
+     */
+    public static void handleRemind(String input, TaskList list, UI ui) throws FridayException {
+        String rest = input.length() > 6 ? input.substring(6).trim() : "";
+        int days = 7;
+
+        if (!rest.isEmpty()) {
+            try {
+                days = Integer.parseInt(rest);
+            } catch (NumberFormatException e) {
+                throw new FridayException("Usage: remind OR remind <days>");
+            }
+            if (days < 0) {
+                throw new FridayException("Days must be non-negative.");
+            }
+        }
+
+        var upcoming = list.getUpcomingTasks(LocalDate.now(), days);
+        ui.printReminders(upcoming, days);
     }
 }

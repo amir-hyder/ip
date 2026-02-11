@@ -1,5 +1,6 @@
 package friday;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
@@ -97,5 +98,35 @@ public class TaskList {
             }
         }
         return results;
+    }
+
+    /**
+     * Returns a list of tasks occurring within the specified number of days
+     * starting from the given date (inclusive).
+     * <p>
+     * Only {@link Deadline} and {@link Event} tasks are considered.
+     *
+     * @param today The reference date to calculate the reminder window.
+     * @param days  The number of days ahead to include.
+     * @return A list of tasks occurring within the specified range.
+     */
+    public ArrayList<Task> getUpcomingTasks(LocalDate today, int days) {
+        LocalDate endDate = today.plusDays(days);
+        ArrayList<Task> upcoming = new ArrayList<>();
+
+        for (Task t : list) {
+            if (t instanceof Deadline d) {
+                LocalDate due = d.getDate();
+                if (!due.isBefore(today) && !due.isAfter(endDate)) {
+                    upcoming.add(t);
+                }
+            } else if (t instanceof Event e) {
+                LocalDate eventDate = e.getDate();
+                if (!eventDate.isBefore(today) && !eventDate.isAfter(endDate)) {
+                    upcoming.add(t);
+                }
+            }
+        }
+        return upcoming;
     }
 }

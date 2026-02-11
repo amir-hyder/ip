@@ -60,4 +60,8 @@ public class Deadline extends Task {
         return TYPE_CODE + STORAGE_DELIMITER + super.toSaveString()
                 + STORAGE_DELIMITER + this.deadline.format(INPUT_FORMAT);
     }
+
+    public LocalDate getDate() {
+        return this.deadline;
+    }
 }

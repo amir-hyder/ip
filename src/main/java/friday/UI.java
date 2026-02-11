@@ -121,4 +121,22 @@ public class UI {
             System.out.println((i + 1) + "." + matches.get(i));
         }
     }
+
+    /**
+     * Displays a list of upcoming tasks occurring within the specified number of days.
+     *
+     * @param tasks The list of upcoming tasks.
+     * @param days  The number of days used for the reminder window.
+     */
+    public void printReminders(java.util.List<Task> tasks, int days) {
+        if (tasks.isEmpty()) {
+            System.out.println("No upcoming tasks in the next " + days + " days.");
+            return;
+        }
+        System.out.println("Here are your upcoming tasks in the next " + days + " days:");
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println((i + 1) + ". " + tasks.get(i));
+        }
+    }
+
 }
