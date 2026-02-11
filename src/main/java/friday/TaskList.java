@@ -30,6 +30,8 @@ public class TaskList {
      * @throws IndexOutOfBoundsException If the index is invalid.
      */
     public void deleteTask(int index) {
+        assert index >= 0 && index < list.size()
+                : "Index out of bounds in deleteTask";
         this.list.remove(index - 1);
     }
 
@@ -74,6 +76,8 @@ public class TaskList {
      * @throws IndexOutOfBoundsException If the index is invalid.
      */
     public Task get(int index) {
+        assert index >= 0 && index < list.size()
+                : "Invalid index in getTask";
         return this.list.get(index);
     }
 
