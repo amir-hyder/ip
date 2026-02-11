@@ -1,8 +1,10 @@
 package friday;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -17,6 +19,7 @@ import javafx.scene.shape.Circle;
  * Represents a dialog bubble (text + avatar) shown in the chat UI.
  */
 public class DialogBox extends HBox {
+    private static final double MAX_WIDTH_RATIO = 0.6;
 
     @FXML
     private Label dialog;
@@ -25,6 +28,19 @@ public class DialogBox extends HBox {
     private ImageView displayPicture;
 
     private DialogBox(String text, Image img) {
+        loadFxml();
+
+        dialog.setText(text);
+        displayPicture.setImage(img);
+        makeAvatarCircular();
+
+        // sizing only
+        this.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(dialog, Priority.ALWAYS);
+        dialog.setMaxWidth(Double.MAX_VALUE);
+    }
+
+    private void loadFxml() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(DialogBox.class.getResource("/view/DialogBox.fxml"));
             fxmlLoader.setRoot(this);
@@ -33,24 +49,18 @@ public class DialogBox extends HBox {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
-        dialog.setText(text);
-        displayPicture.setImage(img);
+    private void makeAvatarCircular() {
         double radius = displayPicture.getFitWidth() / 2;
         Circle clip = new Circle(radius, radius, radius);
         displayPicture.setClip(clip);
-
-
-        // sizing only
-        this.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(dialog, Priority.ALWAYS);
-        dialog.setMaxWidth(Double.MAX_VALUE);
     }
 
     private void flip() {
-        var tmp = javafx.collections.FXCollections.observableArrayList(this.getChildren());
-        java.util.Collections.reverse(tmp);
-        this.getChildren().setAll(tmp);
+        var children = FXCollections.observableArrayList(this.getChildren());
+        Collections.reverse(children);
+        this.getChildren().setAll(children);
         this.setAlignment(Pos.TOP_LEFT);
     }
 
@@ -64,8 +74,7 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getUserDialog(String text, Image img) {
         DialogBox db = new DialogBox(text, img);
-        db.dialog.getStyleClass().add("user-bubble");
-        db.setAlignment(Pos.TOP_RIGHT);
+        db.applyUserStyle();
         return db;
     }
 
@@ -79,9 +88,19 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getFridayDialog(String text, Image img) {
         DialogBox db = new DialogBox(text, img);
-        db.dialog.getStyleClass().add("bot-bubble");
-        db.flip();
+        db.applyBotStyle();
+
         return db;
+    }
+
+    private void applyUserStyle() {
+        dialog.getStyleClass().add("user-bubble");
+        setAlignment(Pos.TOP_RIGHT);
+    }
+
+    private void applyBotStyle() {
+        dialog.getStyleClass().add("bot-bubble");
+        flip();
     }
 
     /**

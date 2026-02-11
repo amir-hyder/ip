@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 /**
- * The main.css entry point of the Friday task management application.
+ * The main entry point of the Friday task management application.
  * <p>
  * This class coordinates user interaction, command handling, task management,
  * and persistent storage by delegating responsibilities to {@link UI},

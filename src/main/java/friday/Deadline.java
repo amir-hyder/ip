@@ -8,8 +8,16 @@ import java.time.format.DateTimeParseException;
  * Represents a deadline task that must be completed by a specific date.
  */
 public class Deadline extends Task {
-    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private static final String TYPE_CODE = "D";
+    private static final String STORAGE_DELIMITER = " | ";
+
+    private static final String INPUT_PATTERN = "yyyy-MM-dd";
+    private static final String OUTPUT_PATTERN = "MMM dd yyyy";
+
+    private static final String INVALID_DATE_MESSAGE = "Invalid date format. Use: yyyy-MM-dd (e.g 2019-12-02)";
+
+    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern(INPUT_PATTERN);
+    private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern(OUTPUT_PATTERN);
 
     private final LocalDate deadline;
 
@@ -21,10 +29,14 @@ public class Deadline extends Task {
      */
     public Deadline(String description, String deadline) {
         super(description);
+        this.deadline = parseDeadline(deadline);
+    }
+
+    private static LocalDate parseDeadline(String deadlineRaw) {
         try {
-            this.deadline = LocalDate.parse(deadline, INPUT_FORMAT);
+            return LocalDate.parse(deadlineRaw, INPUT_FORMAT);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid date format. Use: yyyy-MM-dd (e.g., 2019-12-02)");
+            throw new IllegalArgumentException(INVALID_DATE_MESSAGE);
         }
     }
 
@@ -35,7 +47,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        return "[D] " + super.toString() + " (by: " + this.deadline.format(OUTPUT_FORMAT) + ")";
+        return "[" + TYPE_CODE + "] " + super.toString() + " (by: " + this.deadline.format(OUTPUT_FORMAT) + ")";
     }
 
     /**
@@ -45,6 +57,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toSaveString() {
-        return "D | " + super.toSaveString() + " | " + this.deadline.format(INPUT_FORMAT);
+        return TYPE_CODE + STORAGE_DELIMITER + super.toSaveString()
+                + STORAGE_DELIMITER + this.deadline.format(INPUT_FORMAT);
     }
 }
