@@ -10,6 +10,11 @@ import java.time.format.DateTimeParseException;
  * and has a start and end time.
  */
 public class Event extends Task {
+    private static final String TYPE_CODE = "E";
+    private static final String STORAGE_DELIMITER = " | ";
+
+    private static final String INVALID_EVENT_MESSAGE = "Invalid event format. Use: yyyy-MM-dd HHmm /to HHmm";
+
     private static final DateTimeFormatter DATE_INPUT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter TIME_INPUT = DateTimeFormatter.ofPattern("HHmm");
     private static final DateTimeFormatter DATE_OUTPUT = DateTimeFormatter.ofPattern("MMM dd yyyy");
@@ -27,17 +32,28 @@ public class Event extends Task {
      * @param start Start time of the event.
      * @param end End time of the event.
      */
-    public Event(String description, String date, String start, String end) {
+    public Event(String description, String dateRaw, String startRaw, String endRaw) {
         super(description);
+        this.date = parseDate(dateRaw);
+        this.start = parseTime(startRaw);
+        this.end = parseTime(endRaw);
+    }
+
+    private static LocalDate parseDate(String dateRaw) {
         try {
-            this.date = LocalDate.parse(date, DATE_INPUT);
-            this.start = LocalTime.parse(start, TIME_INPUT);
-            this.end = LocalTime.parse(end, TIME_INPUT);
+            return LocalDate.parse(dateRaw, DATE_INPUT);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid event format. Use: yyyy-MM-dd HHmm /to HHmm");
+            throw new IllegalArgumentException(INVALID_EVENT_MESSAGE, e);
         }
     }
 
+    private static LocalTime parseTime(String timeRaw) {
+        try {
+            return LocalTime.parse(timeRaw, TIME_INPUT);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException(INVALID_EVENT_MESSAGE, e);
+        }
+    }
     /**
      * Returns the string representation of this event for display to the user.
      * Shows the date and time range of the event.
@@ -46,8 +62,13 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        return "[E] " + super.toString() + " (from: " + this.date.format(DATE_OUTPUT) + " "
-                + this.start.format(TIME_OUTPUT) + " to: " + this.end.format(TIME_OUTPUT) + ")";
+        return "[" + TYPE_CODE + "] " + super.toString()
+                + " (from: "
+                + this.date.format(DATE_OUTPUT) + " "
+                + this.start.format(TIME_OUTPUT)
+                + " to: "
+                + this.end.format(TIME_OUTPUT)
+                + ")";
     }
 
     /**
@@ -58,7 +79,10 @@ public class Event extends Task {
      */
     @Override
     public String toSaveString() {
-        return "E | " + super.toSaveString() + " | " + this.date.format(DATE_INPUT) + " | "
-                + this.start.format(TIME_INPUT) + " | " + this.end.format(TIME_INPUT);
+        return TYPE_CODE + STORAGE_DELIMITER
+                + super.toSaveString()
+                + STORAGE_DELIMITER + this.date.format(DATE_INPUT)
+                + STORAGE_DELIMITER + this.start.format(TIME_INPUT)
+                + STORAGE_DELIMITER + this.end.format(TIME_INPUT);
     }
 }
