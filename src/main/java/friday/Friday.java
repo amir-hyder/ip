@@ -12,6 +12,18 @@ import java.time.LocalDate;
  * {@link Parser}, {@link TaskList}, and {@link Storage}.
  */
 public class Friday {
+    // Command keywords as constants
+    private static final String CMD_BYE = "bye";
+    private static final String CMD_LIST = "list";
+    private static final String CMD_MARK = "mark";
+    private static final String CMD_UNMARK = "unmark";
+    private static final String CMD_TODO = "todo";
+    private static final String CMD_DEADLINE = "deadline";
+    private static final String CMD_EVENT = "event";
+    private static final String CMD_DELETE = "delete";
+    private static final String CMD_FIND = "find";
+    private static final String CMD_REMIND = "remind";
+
     // Shared components
     private final UI ui;
     private final Storage storage;
@@ -46,30 +58,35 @@ public class Friday {
         return captureOutput(() -> ui.greet()).trim();
     }
 
-    /** GUI calls this for every user input. */
+    /**
+     * GUI calls this for every user input.
+     * Trims and validates input, and dispatches to the appropriate handler.
+     *
+     * @param input The user input string.
+     * @return The response string to display in the GUI.
+     */
     public String getResponse(String input) {
         String trimmed = (input == null) ? "" : input.trim();
         if (trimmed.isEmpty()) {
             return "";
         }
-
         return captureOutput(() -> {
-            if (trimmed.equals("bye")) {
+            if (trimmed.equals(CMD_BYE)) {
                 isExit = true;
                 ui.bye();
                 return;
             }
-
-            if (trimmed.equals("list")) {
+            if (trimmed.equals(CMD_LIST)) {
                 ui.printList(list);
                 return;
             }
-
             try {
                 handleCommand(trimmed, list, storage, ui, parser);
             } catch (FridayException e) {
                 ui.printException(e);
             } catch (RuntimeException e) {
+                // Print stack trace for debugging
+                e.printStackTrace();
                 ui.printException(new FridayException("Something went wrong: " + e.getMessage()));
             }
         }).trim();
@@ -84,19 +101,16 @@ public class Friday {
      */
     public static void main(String[] args) {
         Friday friday = new Friday();
-
-        //greet
         friday.ui.greet();
-
         while (true) {
             String input = friday.ui.readCommand();
-            if (input.equals("bye")) {
+            if (input.trim().equals(CMD_BYE)) {
                 break;
-            } else if (input.equals("list")) {
+            } else if (input.trim().equals(CMD_LIST)) {
                 friday.ui.printList(friday.list);
             } else {
                 try {
-                    handleCommand(input, friday.list, friday.storage, friday.ui, friday.parser);
+                    handleCommand(input.trim(), friday.list, friday.storage, friday.ui, friday.parser);
                 } catch (FridayException e) {
                     friday.ui.printException(e);
                 }
@@ -133,21 +147,21 @@ public class Friday {
      */
     public static void handleCommand(String input, TaskList list, Storage storage,
                                      UI ui, Parser parser) throws FridayException {
-        if (input.startsWith("mark")) {
+        if (input.startsWith(CMD_MARK)) {
             handleMark(input, list, storage, ui, parser);
-        } else if (input.startsWith("unmark")) {
+        } else if (input.startsWith(CMD_UNMARK)) {
             handleUnmark(input, list, storage, ui, parser);
-        } else if (input.startsWith("todo")) {
+        } else if (input.startsWith(CMD_TODO)) {
             handleTodo(input, list, storage, ui);
-        } else if (input.startsWith("deadline")) {
+        } else if (input.startsWith(CMD_DEADLINE)) {
             handleDeadline(input, list, storage, ui);
-        } else if (input.startsWith("event")) {
+        } else if (input.startsWith(CMD_EVENT)) {
             handleEvent(input, list, storage, ui);
-        } else if (input.startsWith("delete")) {
+        } else if (input.startsWith(CMD_DELETE)) {
             handleDelete(input, list, storage, ui, parser);
-        } else if (input.startsWith("find")) {
+        } else if (input.startsWith(CMD_FIND)) {
             handleFind(input, list, ui);
-        } else if (input.startsWith("remind")) {
+        } else if (input.startsWith(CMD_REMIND)) {
             handleRemind(input, list, ui);
         } else {
             throw new FridayException("I don't understand that command");
@@ -189,7 +203,7 @@ public class Friday {
             throw new FridayException("Task number is out of range");
         }
         Task task = list.get(index - 1);
-        list.deleteTask(index - 1);
+        list.deleteTask(index - 1); // Now TaskList expects 0-based index
         storage.saveTaskList(list);
         ui.printDelete(task, list);
     }

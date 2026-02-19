@@ -26,17 +26,17 @@ public class Storage {
     /**
      * Loads raw lines from the save file.
      *
-     * @return A list of raw strings read from the save file.
+     * @return An unmodifiable list of raw strings read from the save file.
      * @throws FridayException If an I/O error occurs while reading the file.
      */
     public List<String> load() throws FridayException {
         try {
             if (Files.notExists(filePath)) {
-                return new ArrayList<>();
+                return java.util.Collections.emptyList();
             }
-            return Files.readAllLines(filePath);
+            return java.util.Collections.unmodifiableList(Files.readAllLines(filePath));
         } catch (IOException e) {
-            throw new FridayException("Error loading tasks.");
+            throw new FridayException("Error loading tasks from '" + filePath + "': " + e.getMessage());
         }
     }
 
@@ -53,7 +53,7 @@ public class Storage {
             // Create duke.txt if missing, then write
             Files.write(filePath, lines);
         } catch (IOException e) {
-            throw new FridayException("Error saving tasks.");
+            throw new FridayException("Error saving tasks to '" + filePath + "': " + e.getMessage());
         }
     }
 

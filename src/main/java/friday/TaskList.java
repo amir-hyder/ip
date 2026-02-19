@@ -2,13 +2,15 @@ package friday;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a list of {@link Task} objects.
  * Provides operations to add, remove, retrieve, and update tasks in the list.
  */
 public class TaskList {
-    private ArrayList<Task> list;
+    private static final int USER_INDEX_OFFSET = 1;
+    private List<Task> list;
 
     public TaskList() {
         this.list = new ArrayList<>();
@@ -25,38 +27,45 @@ public class TaskList {
 
     /**
      * Deletes the task at the specified position in the list.
-     * The index is 1-based.
+     * The index is 0-based.
      *
-     * @param index The 1-based index of the task to remove.
-     * @throws IndexOutOfBoundsException If the index is invalid.
+     * @param index The 0-based index of the task to remove.
+     * @throws FridayException If the index is invalid.
      */
-    public void deleteTask(int index) {
-        assert index >= 0 && index < list.size()
-                : "Index out of bounds in deleteTask";
-        this.list.remove(index - 1);
+    public void deleteTask(int index) throws FridayException {
+        if (index < 0 || index >= list.size()) {
+            throw new FridayException("Invalid index for deleteTask: " + index);
+        }
+        this.list.remove(index);
     }
 
     /**
      * Marks the task at the specified position as completed.
-     * The index is 1-based.
+     * The index is 0-based.
      *
-     * @param index The 1-based index of the task to mark.
-     * @throws IndexOutOfBoundsException If the index is invalid.
+     * @param index The 0-based index of the task to mark.
+     * @throws FridayException If the index is invalid.
      */
-    public void markTask(int index) {
-        Task task = this.list.get(index - 1);
+    public void markTask(int index) throws FridayException {
+        if (index < 0 || index >= list.size()) {
+            throw new FridayException("Invalid index for markTask: " + index);
+        }
+        Task task = this.list.get(index);
         task.mark();
     }
 
     /**
      * Marks the task at the specified position as not completed.
-     * The index is 1-based.
+     * The index is 0-based.
      *
-     * @param index The 1-based index of the task to unmark.
-     * @throws IndexOutOfBoundsException If the index is invalid.
+     * @param index The 0-based index of the task to unmark.
+     * @throws FridayException If the index is invalid.
      */
-    public void unmarkTask(int index) {
-        Task task = this.list.get(index - 1);
+    public void unmarkTask(int index) throws FridayException {
+        if (index < 0 || index >= list.size()) {
+            throw new FridayException("Invalid index for unmarkTask: " + index);
+        }
+        Task task = this.list.get(index);
         task.unmark();
     }
 
@@ -74,11 +83,12 @@ public class TaskList {
      *
      * @param index The 0-based index of the task to retrieve.
      * @return The {@code Task} at the specified index.
-     * @throws IndexOutOfBoundsException If the index is invalid.
+     * @throws FridayException If the index is invalid.
      */
-    public Task get(int index) {
-        assert index >= 0 && index < list.size()
-                : "Invalid index in getTask";
+    public Task get(int index) throws FridayException {
+        if (index < 0 || index >= list.size()) {
+            throw new FridayException("Invalid index in getTask: " + index);
+        }
         return this.list.get(index);
     }
 
@@ -87,17 +97,16 @@ public class TaskList {
      * the given keyword.
      *
      * @param keyword The keyword to search for.
-     * @return A list of matching {@link Task} objects.
+     * @return An unmodifiable list of matching {@link Task} objects.
      */
-    public ArrayList<Task> findTasks(String keyword) {
-        ArrayList<Task> results = new ArrayList<>();
-
+    public List<Task> findTasks(String keyword) {
+        List<Task> results = new ArrayList<>();
         for (Task task : list) {
             if (task.toString().contains(keyword)) {
                 results.add(task);
             }
         }
-        return results;
+        return java.util.Collections.unmodifiableList(results);
     }
 
     /**
@@ -108,12 +117,11 @@ public class TaskList {
      *
      * @param today The reference date to calculate the reminder window.
      * @param days  The number of days ahead to include.
-     * @return A list of tasks occurring within the specified range.
+     * @return An unmodifiable list of tasks occurring within the specified range.
      */
-    public ArrayList<Task> getUpcomingTasks(LocalDate today, int days) {
+    public List<Task> getUpcomingTasks(LocalDate today, int days) {
         LocalDate endDate = today.plusDays(days);
-        ArrayList<Task> upcoming = new ArrayList<>();
-
+        List<Task> upcoming = new ArrayList<>();
         for (Task t : list) {
             if (t instanceof Deadline d) {
                 LocalDate due = d.getDate();
@@ -127,6 +135,6 @@ public class TaskList {
                 }
             }
         }
-        return upcoming;
+        return java.util.Collections.unmodifiableList(upcoming);
     }
 }
