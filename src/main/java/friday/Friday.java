@@ -218,7 +218,10 @@ public class Friday {
      * @throws FridayException If the command format is invalid.
      */
     public static void handleEvent(String input, TaskList list, Storage storage, UI ui) throws FridayException {
-        String noCommand = input.substring(6);
+        String noCommand = input.substring(CMD_EVENT.length()).trim();
+        if (noCommand.isEmpty()) {
+            throw new FridayException("Please include an task name for the event.");
+        }
         String[] parts = noCommand.split(" /from ");
         String description = parts[0];
         String[] parts2 = parts[1].split(" /to ");
@@ -242,7 +245,10 @@ public class Friday {
      * @throws FridayException If the command format is invalid.
      */
     public static void handleDeadline(String input, TaskList list, Storage storage, UI ui) throws FridayException {
-        String noCommand = input.substring(9);
+        String noCommand = input.substring(CMD_DEADLINE.length()).trim();
+        if (noCommand.isEmpty()) {
+            throw new FridayException("Please include a task name for the deadline.");
+        }
         String[] parts = noCommand.split(" /by ");
         String description = parts[0];
         String deadline = parts[1];
@@ -262,7 +268,10 @@ public class Friday {
      * @throws FridayException If the command format is invalid.
      */
     public static void handleTodo(String input, TaskList list, Storage storage, UI ui) throws FridayException {
-        String todoItem = input.substring(5);
+        String todoItem = input.substring(CMD_TODO.length()).trim();
+        if (todoItem.trim().isEmpty()) {
+            throw new FridayException("Please include a task name for todo.");
+        }
         ToDo item = new ToDo(todoItem);
         list.addTask(item);
         ui.printAddTask(item, list);
