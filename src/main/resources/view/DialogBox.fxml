@@ -12,7 +12,6 @@
     <children>
         <Label fx:id="dialog"
                wrapText="true"
-               maxWidth="Infinity"
                styleClass="bubble"/>
         <ImageView fx:id="displayPicture"
                    fitWidth="60.0"

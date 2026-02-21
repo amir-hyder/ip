@@ -19,7 +19,7 @@ import javafx.scene.shape.Circle;
  * Represents a dialog bubble (text + avatar) shown in the chat UI.
  */
 public class DialogBox extends HBox {
-    private static final double MAX_WIDTH_RATIO = 0.6;
+    private static final double MAX_WIDTH_RATIO = 0.75;
 
     @FXML
     private Label dialog;
@@ -31,13 +31,14 @@ public class DialogBox extends HBox {
         loadFxml();
 
         dialog.setText(text);
+        dialog.setWrapText(true);
         displayPicture.setImage(img);
         makeAvatarCircular();
 
-        // sizing only
+        // sizing only: let bubble hug text, but allow wrapping via maxWidth binding
         this.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(dialog, Priority.ALWAYS);
-        dialog.setMaxWidth(Double.MAX_VALUE);
+
+        HBox.setHgrow(dialog, Priority.NEVER); // dialog should hug its text
     }
 
     private void loadFxml() {
@@ -110,6 +111,6 @@ public class DialogBox extends HBox {
      * @param containerWidth The width property of the dialog container.
      */
     public void bindMaxWidth(ReadOnlyDoubleProperty containerWidth) {
-        dialog.maxWidthProperty().bind(containerWidth.multiply(0.6));
+        dialog.maxWidthProperty().bind(containerWidth.multiply(MAX_WIDTH_RATIO));
     }
 }
