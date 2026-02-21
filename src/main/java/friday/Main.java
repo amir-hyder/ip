@@ -30,6 +30,10 @@ public class Main extends Application {
         controller.setFriday(friday);
 
         stage.setScene(scene);
+        stage.setTitle("Friday");
+        stage.setMinWidth(600);
+        stage.setMinHeight(500);
+        stage.setMaximized(true);
         stage.show();
     }
 }
