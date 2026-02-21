@@ -19,8 +19,8 @@ public class Storage {
      * used to store task data.
      */
     public Storage() {
-        // This represents ./data/duke.txt
-        this.filePath = Paths.get("data", "duke.txt");
+        // This represents ./data/Friday.txt
+        this.filePath = Paths.get("data", "Friday.txt");
     }
 
     /**
