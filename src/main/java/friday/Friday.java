@@ -222,6 +222,11 @@ public class Friday {
         if (noCommand.isEmpty()) {
             throw new FridayException("Please include an task name for the event.");
         }
+        if (!noCommand.contains(" /from ") || !noCommand.contains(" /to ")) {
+            throw new FridayException(
+                "Invalid event format.\n"
+                + "Usage: event <description> /from <yyyy-mm-dd HHmm> /to <HHmm>");
+        }
         String[] parts = noCommand.split(" /from ");
         String description = parts[0];
         String[] parts2 = parts[1].split(" /to ");
@@ -248,6 +253,11 @@ public class Friday {
         String noCommand = input.substring(CMD_DEADLINE.length()).trim();
         if (noCommand.isEmpty()) {
             throw new FridayException("Please include a task name for the deadline.");
+        }
+        if (!noCommand.contains(" /by ")) {
+            throw new FridayException(
+                "Invalid deadline format.\n"
+                + "Usage: deadline <description> /by <yyyy-mm-dd>");
         }
         String[] parts = noCommand.split(" /by ");
         String description = parts[0];
